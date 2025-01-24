@@ -39,6 +39,7 @@ model Book {
   name      String
   author    String
   price     Decimal
+  bookImage String    @db.Text()
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -51,6 +52,7 @@ model Book {
 
 model Cart {
   id     Int  @id @default(autoincrement())
+  qty    Int
   userId Int
   user   User @relation(fields: [userId], references: [id])
   bookId Int
