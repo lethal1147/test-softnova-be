@@ -1,5 +1,5 @@
 import { UserRole } from "@prisma/client";
-import { IsEnum, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
 
 export class CreateUserDTO {
   @IsString()
@@ -8,6 +8,7 @@ export class CreateUserDTO {
   @IsString()
   readonly password: string;
 
+  @IsOptional()
   @IsEnum(UserRole)
   readonly role: UserRole;
 }

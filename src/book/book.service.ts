@@ -1,4 +1,3 @@
-import { BookWhereInput } from "./../../node_modules/.prisma/client/index.d";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/common/prisma/prisma.service";
 import { CreateBookDTO } from "./dto/createBook.dto";
@@ -112,7 +111,7 @@ export class BookService {
     try {
       const { textSearch, maxPrice, minPrice } = filter;
 
-      const filters: BookWhereInput = {
+      const filters = {
         ...(textSearch && {
           OR: [
             { name: { contains: textSearch, mode: "insensitive" } },
@@ -122,9 +121,10 @@ export class BookService {
         ...(minPrice && { price: { gte: minPrice } }),
         ...(maxPrice && { price: { lte: maxPrice } }),
       };
+      console.log(filters);
 
       const books = await this.prisma.book.findMany({
-        where: filters,
+        where: {},
       });
 
       return handleSuccessResponse({

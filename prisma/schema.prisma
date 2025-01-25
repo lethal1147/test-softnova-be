@@ -70,7 +70,7 @@ model BookTransaction {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   deletedAt           DateTime?
-  BookTransactionItem BookTransactionItem[]
+  bookTransactionItem BookTransactionItem[]
 }
 
 model BookTransactionItem {

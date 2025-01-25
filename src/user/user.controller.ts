@@ -8,9 +8,8 @@ import {
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDTO } from "./dto/createUser.dto";
-import { LoginBodyDTO } from "./dto/loginBody.dto";
 
-@Controller("user")
+@Controller("api/user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -19,13 +18,8 @@ export class UserController {
     return this.userService.getOneUser(id);
   }
 
-  @Post("/login")
-  login(@Body() body: LoginBodyDTO) {
-    return this.login(body);
-  }
-
   @Post()
   createUser(@Body() body: CreateUserDTO) {
-    return this.createUser(body);
+    return this.userService.createUser(body);
   }
 }

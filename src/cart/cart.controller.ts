@@ -3,7 +3,7 @@ import { Body, Controller, Delete, Param, Patch, Post } from "@nestjs/common";
 import { AddToCartDTO } from "./dto/addToCart.dto";
 import { UpdateQtyInCartDTO } from "./dto/updateQtyInCart.dto";
 
-@Controller("cart")
+@Controller("api/cart")
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
