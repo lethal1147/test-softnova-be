@@ -29,17 +29,25 @@ export class CartService {
 
   async updateQtyInCart(cartId: number, body: UpdateQtyInCartDTO) {
     try {
-      const cart = await this.prisma.cart.update({
-        where: {
-          id: cartId,
-        },
-        data: {
-          qty: body.qty,
-        },
-      });
+      if (body.qty <= 0) {
+        await this.prisma.cart.delete({
+          where: {
+            id: +cartId,
+          },
+        });
+      } else {
+        await this.prisma.cart.update({
+          where: {
+            id: +cartId,
+          },
+          data: {
+            qty: +body.qty,
+          },
+        });
+      }
 
       return handleSuccessResponse({
-        data: cart,
+        data: null,
         message: "Update quantity successfully.",
       });
     } catch (err) {
@@ -58,6 +66,26 @@ export class CartService {
       return handleSuccessResponse({
         data: null,
         message: "Update quantity successfully.",
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getAllCartByUserId(userId: number) {
+    try {
+      const cart = await this.prisma.cart.findMany({
+        where: {
+          userId: +userId,
+        },
+        include: {
+          book: true,
+        },
+      });
+
+      return handleSuccessResponse({
+        data: cart,
+        message: "Get all cart item successfully.",
       });
     } catch (err) {
       throw err;

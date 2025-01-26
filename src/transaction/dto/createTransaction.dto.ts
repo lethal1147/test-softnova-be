@@ -15,10 +15,10 @@ export class CreateTransactionDTO {
   @IsInt()
   userId: number;
 
-  @IsDecimal()
+  @IsInt()
   total: number;
 
-  @IsDecimal()
+  @IsInt()
   discount: number;
 
   @IsArray()

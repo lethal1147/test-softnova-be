@@ -31,12 +31,13 @@ export class AuthService {
         id: true,
         email: true,
         password: true,
+        role: true,
       },
     });
     if (!user) return null;
 
     const isCorrectPassword = await comparePassword(password, user.password);
     if (!isCorrectPassword) return null;
-    return { id: user.id, email: user.email };
+    return { id: user.id, email: user.email, role: user.role };
   }
 }

@@ -9,20 +9,55 @@ export class TransactionService {
 
   async createTransaction(body: CreateTransactionDTO) {
     try {
-      const transaction = await this.prisma.bookTransaction.create({
-        data: {
-          userId: body.userId,
-          total: body.total,
-          discount: body.discount,
-          bookTransactionItem: {
-            createMany: { data: body.bookTransactionItem },
+      const transaction = await this.prisma.$transaction(async (prisma) => {
+        const t = await prisma.bookTransaction.create({
+          data: {
+            userId: body.userId,
+            total: body.total,
+            discount: body.discount,
+            bookTransactionItem: {
+              createMany: { data: body.bookTransactionItem },
+            },
           },
-        },
+        });
+        await prisma.cart.deleteMany({
+          where: {
+            userId: body.userId,
+            bookId: { in: body.bookTransactionItem.map((item) => item.bookId) },
+          },
+        });
+
+        return t;
       });
 
       return handleSuccessResponse({
         data: transaction,
         message: "Create transaction successfully.",
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getAllTransaction({ userId }: { userId: number }) {
+    try {
+      const transactions = await this.prisma.bookTransaction.findMany({
+        where: {
+          userId: userId,
+        },
+        include: {
+          bookTransactionItem: {
+            include: { book: true },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return handleSuccessResponse({
+        data: transactions,
+        message: "Get all transaction successfully.",
       });
     } catch (err) {
       throw err;

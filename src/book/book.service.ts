@@ -2,14 +2,15 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/common/prisma/prisma.service";
 import { CreateBookDTO } from "./dto/createBook.dto";
 import { handleSuccessResponse } from "utils/utils";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class BookService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createBook(body: CreateBookDTO, file: Express.Multer.File[]) {
+  async createBook(body: CreateBookDTO, file: Express.Multer.File) {
     try {
-      const fileBase64 = file[0]?.buffer?.toString("base64") || null;
+      const fileBase64 = file.buffer?.toString("base64") || null;
       const book = await this.prisma.book.create({
         data: {
           name: body.name,
@@ -28,13 +29,9 @@ export class BookService {
     }
   }
 
-  async updateBook(
-    id: number,
-    body: CreateBookDTO,
-    file: Express.Multer.File[],
-  ) {
+  async updateBook(id: number, body: CreateBookDTO, file: Express.Multer.File) {
     try {
-      const fileBase64 = file[0]?.buffer?.toString("base64") || null;
+      const fileBase64 = file.buffer?.toString("base64");
       const book = await this.prisma.book.update({
         where: {
           id,
@@ -43,7 +40,7 @@ export class BookService {
           name: body.name,
           author: body.author,
           price: body.price,
-          bookImage: fileBase64,
+          ...(fileBase64 && { bookImage: fileBase64 }),
         },
       });
 
@@ -107,24 +104,25 @@ export class BookService {
     textSearch?: string;
     minPrice?: number;
     maxPrice?: number;
+    page?: number;
+    limit?: number;
   }) {
     try {
       const { textSearch, maxPrice, minPrice } = filter;
 
-      const filters = {
+      const filters: Prisma.BookWhereInput = {
         ...(textSearch && {
           OR: [
             { name: { contains: textSearch, mode: "insensitive" } },
             { author: { contains: textSearch, mode: "insensitive" } },
           ],
         }),
-        ...(minPrice && { price: { gte: minPrice } }),
-        ...(maxPrice && { price: { lte: maxPrice } }),
+        ...(minPrice && { price: { gte: +minPrice } }),
+        ...(maxPrice && { price: { lte: +maxPrice } }),
       };
-      console.log(filters);
 
       const books = await this.prisma.book.findMany({
-        where: {},
+        where: filters,
       });
 
       return handleSuccessResponse({

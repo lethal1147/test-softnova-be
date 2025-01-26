@@ -33,7 +33,7 @@ export class AuthController {
     });
 
     return handleSuccessResponse({
-      data: null,
+      data: user,
       message: "Login successfully.",
     });
   }
