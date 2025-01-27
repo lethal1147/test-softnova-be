@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { BookService } from "./book.service";
@@ -21,6 +22,7 @@ import {
   ApiQuery,
   ApiResponse,
 } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller("api/book")
 export class BookController {
@@ -79,6 +81,7 @@ export class BookController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Get("home")
   getBooksHomepage() {
     return this.bookService.getBooksHomepage();
@@ -153,6 +156,7 @@ export class BookController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Get("search")
   getSearchBook(
     @Query()
@@ -212,6 +216,7 @@ export class BookController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Post("")
   @UseInterceptors(AnyFilesInterceptor())
   createBook(
@@ -271,6 +276,7 @@ export class BookController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Patch("/:id")
   @UseInterceptors(AnyFilesInterceptor())
   updateBook(

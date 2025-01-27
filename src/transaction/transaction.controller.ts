@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { TransactionService } from "./transaction.service";
 import { CreateTransactionDTO } from "./dto/createTransaction.dto";
@@ -17,6 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @ApiTags("Transaction")
 @Controller("api/transaction")
@@ -90,6 +92,7 @@ export class TransactionController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Post("")
   createTransaction(@Body() body: CreateTransactionDTO) {
     return this.transactionService.createTransaction(body);
@@ -180,6 +183,7 @@ export class TransactionController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   getAllTransaction(
     @Param("id", ParseIntPipe) userId: number,

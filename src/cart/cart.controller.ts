@@ -7,10 +7,12 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { AddToCartDTO } from "./dto/addToCart.dto";
 import { UpdateQtyInCartDTO } from "./dto/updateQtyInCart.dto";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller("api/cart")
 export class CartController {
@@ -58,6 +60,7 @@ export class CartController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   addToCart(@Body() body: AddToCartDTO) {
     return this.cartService.addToCart(body);
@@ -91,6 +94,7 @@ export class CartController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Patch(":id")
   updateQtyInCart(
     @Param("id") cartId: number,
@@ -118,6 +122,7 @@ export class CartController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   deleteFromCart(@Param("id") cartId: number) {
     return this.cartService.removeBookInCart(cartId);
@@ -166,6 +171,7 @@ export class CartController {
       },
     },
   })
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
   getAllCartByUserId(@Param("id") userId: number) {
     return this.cartService.getAllCartByUserId(userId);

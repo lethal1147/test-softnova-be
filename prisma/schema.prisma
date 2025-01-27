@@ -66,8 +66,8 @@ model BookTransaction {
   id                  Int                   @id @default(autoincrement())
   userId              Int
   user                User                  @relation(fields: [userId], references: [id])
-  total               Decimal
-  discount            Decimal
+  total               Decimal               @db.Decimal(10, 2)
+  discount            Decimal               @db.Decimal(10, 2)
   createdAt           DateTime              @default(now())
   bookTransactionItem BookTransactionItem[]
 
@@ -78,7 +78,7 @@ model BookTransactionItem {
   id            Int             @id @default(autoincrement())
   bookId        Int
   book          Book            @relation(fields: [bookId], references: [id])
-  price         Decimal
+  price         Decimal         @db.Decimal(10, 2)
   qty           Int
   transactionId Int
   transaction   BookTransaction @relation(fields: [transactionId], references: [id])
