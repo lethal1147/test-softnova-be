@@ -66,13 +66,13 @@ export class BookService {
               qty: "desc",
             },
           },
-          take: 10,
+          take: 5,
         }),
         this.prisma.book.findMany({
           orderBy: {
             createdAt: "desc",
           },
-          take: 10,
+          take: 5,
         }),
       ]);
 
@@ -88,9 +88,11 @@ export class BookService {
         }),
       );
 
+      const formatted = bestSeller.map((book) => ({ ...book.book }));
+
       return handleSuccessResponse({
         data: {
-          bestSeller,
+          bestSeller: formatted,
           newRelease,
         },
         message: "Get books successfully.",
@@ -108,7 +110,7 @@ export class BookService {
     limit?: number;
   }) {
     try {
-      const { textSearch, maxPrice, minPrice } = filter;
+      const { textSearch, maxPrice, minPrice, page = 1, limit = 10 } = filter;
 
       const filters: Prisma.BookWhereInput = {
         ...(textSearch && {
@@ -120,13 +122,19 @@ export class BookService {
         ...(minPrice && { price: { gte: +minPrice } }),
         ...(maxPrice && { price: { lte: +maxPrice } }),
       };
-
-      const books = await this.prisma.book.findMany({
-        where: filters,
-      });
+      const [books, total] = await this.prisma.$transaction(async (prisma) => [
+        await prisma.book.findMany({
+          where: filters,
+          skip: +limit * (page - 1),
+          take: +limit,
+        }),
+        await prisma.book.count({
+          where: filters,
+        }),
+      ]);
 
       return handleSuccessResponse({
-        data: books,
+        data: { books, total },
         message: "Get filtered book successfully.",
       });
     } catch (err) {

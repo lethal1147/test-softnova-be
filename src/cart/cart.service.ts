@@ -81,6 +81,9 @@ export class CartService {
         include: {
           book: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
       return handleSuccessResponse({

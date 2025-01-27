@@ -41,22 +41,29 @@ export class TransactionService {
 
   async getAllTransaction({ userId }: { userId: number }) {
     try {
-      const transactions = await this.prisma.bookTransaction.findMany({
-        where: {
-          userId: userId,
-        },
-        include: {
-          bookTransactionItem: {
-            include: { book: true },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+      const [transactions, total] = await this.prisma.$transaction(
+        async (prisma) => [
+          await prisma.bookTransaction.findMany({
+            where: {
+              userId: userId,
+            },
+            include: {
+              bookTransactionItem: {
+                include: { book: true },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          }),
+          await prisma.bookTransaction.count({
+            where: { userId: userId },
+          }),
+        ],
+      );
 
       return handleSuccessResponse({
-        data: transactions,
+        data: { transactions, total },
         message: "Get all transaction successfully.",
       });
     } catch (err) {
