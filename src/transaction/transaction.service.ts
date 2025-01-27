@@ -39,7 +39,15 @@ export class TransactionService {
     }
   }
 
-  async getAllTransaction({ userId }: { userId: number }) {
+  async getAllTransaction({
+    userId,
+    page = 1,
+    limit = 10,
+  }: {
+    userId: number;
+    page?: number;
+    limit?: number;
+  }) {
     try {
       const [transactions, total] = await this.prisma.$transaction(
         async (prisma) => [
@@ -47,6 +55,8 @@ export class TransactionService {
             where: {
               userId: userId,
             },
+            skip: +limit * (page - 1),
+            take: +limit,
             include: {
               bookTransactionItem: {
                 include: { book: true },
